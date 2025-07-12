@@ -59,6 +59,18 @@ export const colors = {
     medium: 'rgba(0, 0, 0, 0.15)',
     dark: 'rgba(0, 0, 0, 0.25)',
   },
+
+  // Glow effects
+  glow: {
+    google: 'rgba(66, 133, 244, 0.3)',
+    microsoft: 'rgba(94, 94, 94, 0.3)',
+    apple: 'rgba(0, 0, 0, 0.3)',
+    primary: 'rgba(0, 122, 255, 0.3)',
+    premium: 'rgba(139, 92, 246, 0.3)',
+    success: 'rgba(52, 199, 89, 0.3)',
+    warning: 'rgba(255, 149, 0, 0.3)',
+    error: 'rgba(255, 59, 48, 0.3)',
+  },
 };
 
 export const typography = {
@@ -70,17 +82,17 @@ export const typography = {
     bold: 'System',
   },
   
-  // Font sizes
+  // Updated smaller font sizes for better readability
   fontSize: {
-    xs: 12,
-    sm: 14,
-    base: 16,
-    lg: 18,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
-    '5xl': 48,
+    xs: 10,      // Reduced from 12
+    sm: 12,      // Reduced from 14
+    base: 14,    // Reduced from 16
+    lg: 16,      // Reduced from 18
+    xl: 18,      // Reduced from 20
+    '2xl': 20,   // Reduced from 24
+    '3xl': 24,   // Reduced from 30
+    '4xl': 28,   // Reduced from 36
+    '5xl': 36,   // Reduced from 48
   },
   
   // Line heights
@@ -146,6 +158,73 @@ export const shadows = {
     shadowRadius: 4.65,
     elevation: 8,
   },
+  glow: {
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.8,
+    shadowRadius: 8,
+    elevation: 12,
+  },
+};
+
+// Interaction styles for hover and touch effects
+export const interactions = {
+  button: {
+    default: {
+      transform: [{ scale: 1 }],
+      opacity: 1,
+    },
+    hover: {
+      transform: [{ scale: 1.02 }],
+      opacity: 0.9,
+    },
+    pressed: {
+      transform: [{ scale: 0.98 }],
+      opacity: 0.8,
+    },
+  },
+  card: {
+    default: {
+      transform: [{ scale: 1 }],
+      opacity: 1,
+    },
+    hover: {
+      transform: [{ scale: 1.01 }],
+      opacity: 0.95,
+    },
+    pressed: {
+      transform: [{ scale: 0.99 }],
+      opacity: 0.9,
+    },
+  },
+  provider: {
+    default: {
+      transform: [{ scale: 1 }],
+      opacity: 1,
+    },
+    hover: {
+      transform: [{ scale: 1.05 }],
+      opacity: 0.9,
+    },
+    pressed: {
+      transform: [{ scale: 0.95 }],
+      opacity: 0.8,
+    },
+  },
+};
+
+// Glow animation keyframes
+export const glowAnimation = {
+  from: {
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  to: {
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+  },
 };
 
 export const theme = {
@@ -208,6 +287,7 @@ export const animations = {
     quick: 200,
     normal: 300,
     slow: 500,
+    glow: 1000,
   },
   easing: {
     easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -215,3 +295,27 @@ export const animations = {
     easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
   },
 };
+
+// Helper function to create glow styles
+export const createGlowStyle = (color, intensity = 0.3) => ({
+  shadowColor: color,
+  shadowOffset: {
+    width: 0,
+    height: 0,
+  },
+  shadowOpacity: intensity,
+  shadowRadius: 8,
+  elevation: 12,
+});
+
+// Helper function to create hover styles
+export const createHoverStyle = (baseStyle, hoverTransform = { scale: 1.02 }) => ({
+  ...baseStyle,
+  transform: [hoverTransform],
+});
+
+// Helper function to create touch feedback
+export const createTouchFeedback = (scale = 0.98) => ({
+  transform: [{ scale }],
+  opacity: 0.8,
+});

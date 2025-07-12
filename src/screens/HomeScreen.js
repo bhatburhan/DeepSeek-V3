@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Dimensions,
   RefreshControl,
   Animated,
@@ -16,7 +15,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/AuthContext';
 import { usePremium } from '../context/PremiumContext';
 import { useTheme } from '../context/ThemeContext';
-import { colors, spacing, typography, borderRadius, shadows } from '../theme';
+import { colors, spacing, typography, borderRadius, shadows, createGlowStyle } from '../theme';
+import InteractiveButton from '../components/InteractiveButton';
+import InteractiveCard from '../components/InteractiveCard';
 import Toast from 'react-native-toast-message';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
@@ -166,14 +167,17 @@ const HomeScreen = () => {
           },
         ]}
       >
-        <TouchableOpacity
+        <InteractiveCard
           style={[
             styles.providerButton,
-            { backgroundColor: provider.backgroundColor },
             !provider.available && styles.disabledProvider,
           ]}
+          glowColor={colors.glow[provider.id]}
+          intensity={0.4}
+          hoverScale={1.05}
+          pressScale={0.95}
           onPress={() => handleProviderPress(provider)}
-          activeOpacity={0.8}
+          disabled={!provider.available}
         >
           {/* Lock overlay for premium features */}
           {!provider.available && (
@@ -215,7 +219,7 @@ const HomeScreen = () => {
           <Text style={[styles.sessionCount, { color: theme.colors.text }]}>
             {provider.sessions} sessions
           </Text>
-        </TouchableOpacity>
+        </InteractiveCard>
       </Animated.View>
     );
   };
@@ -240,12 +244,13 @@ const HomeScreen = () => {
                 Manage your digital sessions
               </Text>
             </View>
-            <TouchableOpacity
+            <InteractiveButton
               style={[styles.settingsButton, { backgroundColor: theme.colors.surface }]}
+              variant="secondary"
               onPress={handleSettingsPress}
             >
               <Text style={styles.settingsIcon}>⚙️</Text>
-            </TouchableOpacity>
+            </InteractiveButton>
           </View>
           
           {/* Stats */}
@@ -297,8 +302,9 @@ const HomeScreen = () => {
           </Text>
           
           <View style={styles.actionsGrid}>
-            <TouchableOpacity
+            <InteractiveCard
               style={[styles.actionButton, { backgroundColor: theme.colors.surface }]}
+              glowColor={colors.glow.primary}
               onPress={handleRefresh}
               disabled={isLoading}
             >
@@ -306,24 +312,27 @@ const HomeScreen = () => {
               <Text style={[styles.actionText, { color: theme.colors.text }]}>
                 Refresh All
               </Text>
-            </TouchableOpacity>
+            </InteractiveCard>
             
-            <TouchableOpacity
+            <InteractiveCard
               style={[styles.actionButton, { backgroundColor: theme.colors.surface }]}
+              glowColor={colors.glow.premium}
               onPress={handlePremiumPress}
             >
               <Text style={styles.actionIcon}>⭐</Text>
               <Text style={[styles.actionText, { color: theme.colors.text }]}>
                 {premiumStatus.isPremium ? 'Manage Plan' : 'Go Premium'}
               </Text>
-            </TouchableOpacity>
+            </InteractiveCard>
           </View>
         </View>
 
         {/* Premium Banner */}
         {!premiumStatus.isPremium && (
-          <TouchableOpacity
+          <InteractiveCard
             style={styles.premiumBanner}
+            glowColor={colors.glow.premium}
+            intensity={0.5}
             onPress={handlePremiumPress}
           >
             <LinearGradient
@@ -335,7 +344,7 @@ const HomeScreen = () => {
                 Get one-click logout, Apple ID sessions, and more
               </Text>
             </LinearGradient>
-          </TouchableOpacity>
+          </InteractiveCard>
         )}
       </ScrollView>
 
@@ -362,49 +371,56 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: spacing.lg,
+    alignItems: 'center',
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: spacing.lg,
+    width: '100%',
   },
   greeting: {
-    fontSize: typography.fontSize['2xl'],
+    fontSize: typography.fontSize.xl,
     fontWeight: 'bold',
     marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
+    textAlign: 'center',
   },
   settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadows.sm,
+    ...createGlowStyle(colors.glow.primary, 0.3),
   },
   settingsIcon: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
   },
   statsContainer: {
     flexDirection: 'row',
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    ...shadows.sm,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    ...createGlowStyle(colors.glow.primary, 0.2),
+    width: '100%',
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
   },
   statValue: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize.lg,
     fontWeight: 'bold',
     marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   statLabel: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
+    textAlign: 'center',
   },
   statDivider: {
     width: 1,
@@ -414,55 +430,60 @@ const styles = StyleSheet.create({
   providersContainer: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
+    alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     fontWeight: '600',
-    marginBottom: spacing.md,
+    marginBottom: spacing.lg,
+    textAlign: 'center',
   },
   providersGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: spacing.md,
+    gap: spacing.lg,
   },
   providerContainer: {
     alignItems: 'center',
   },
   providerButton: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 90,
+    height: 110,
+    borderRadius: borderRadius['2xl'],
     alignItems: 'center',
     justifyContent: 'center',
-    ...shadows.md,
     position: 'relative',
+    padding: spacing.sm,
   },
   disabledProvider: {
     opacity: 0.6,
   },
   lockOverlay: {
     position: 'absolute',
-    top: -5,
-    right: -5,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    top: -8,
+    right: -8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: colors.premium.gold,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
+    ...createGlowStyle(colors.glow.warning, 0.6),
   },
   lockIcon: {
-    fontSize: 12,
+    fontSize: typography.fontSize.xs,
   },
   providerIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
+    ...createGlowStyle(colors.shadow.medium, 0.4),
   },
   googleIcon: {
     alignItems: 'center',
@@ -475,12 +496,12 @@ const styles = StyleSheet.create({
   microsoftSquares: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
   },
   microsoftSquare: {
-    width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
     margin: 1,
   },
   appleIcon: {
@@ -488,60 +509,65 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconText: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize.lg,
     fontWeight: 'bold',
   },
   providerName: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     fontWeight: '600',
     marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   sessionCount: {
-    fontSize: typography.fontSize.xs,
+    fontSize: 10,
     opacity: 0.7,
+    textAlign: 'center',
   },
   quickActionsContainer: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
+    alignItems: 'center',
   },
   actionsGrid: {
     flexDirection: 'row',
     gap: spacing.md,
+    width: '100%',
   },
   actionButton: {
     flex: 1,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     alignItems: 'center',
-    ...shadows.sm,
+    minHeight: 80,
   },
   actionIcon: {
-    fontSize: typography.fontSize.xl,
-    marginBottom: spacing.xs,
+    fontSize: typography.fontSize.lg,
+    marginBottom: spacing.sm,
   },
   actionText: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     fontWeight: '500',
+    textAlign: 'center',
   },
   premiumBanner: {
     marginHorizontal: spacing.lg,
     marginBottom: spacing.lg,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.xl,
     overflow: 'hidden',
-    ...shadows.md,
   },
   premiumGradient: {
     padding: spacing.lg,
     alignItems: 'center',
   },
   premiumTitle: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     fontWeight: 'bold',
     color: colors.text.white,
     marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   premiumSubtitle: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     color: colors.text.white,
     opacity: 0.9,
     textAlign: 'center',

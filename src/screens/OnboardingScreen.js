@@ -4,9 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
   Dimensions,
-  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,7 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
 import { usePremium } from '../context/PremiumContext';
 import LocalStorageService from '../services/LocalStorageService';
-import { colors, spacing, typography, borderRadius, shadows } from '../theme';
+import { colors, spacing, typography, borderRadius, shadows, createGlowStyle } from '../theme';
+import InteractiveButton from '../components/InteractiveButton';
+import InteractiveCard from '../components/InteractiveCard';
 import Toast from 'react-native-toast-message';
 
 const { width, height } = Dimensions.get('window');
@@ -141,75 +141,78 @@ const OnboardingScreen = () => {
             </Text>
           </View>
 
-          {/* Plan Cards */}
-          <View style={styles.plansContainer}>
-            {plans.map((plan) => (
-              <TouchableOpacity
-                key={plan.id}
-                style={[
-                  styles.planCard,
-                  selectedPlan === plan.id && styles.selectedPlan,
-                  plan.popular && styles.popularPlan,
-                ]}
-                onPress={() => handlePlanSelect(plan.id)}
-                activeOpacity={0.9}
-              >
-                <BlurView intensity={20} tint="light" style={styles.cardBlur}>
-                  {plan.popular && (
-                    <View style={styles.popularBadge}>
-                      <Text style={styles.popularText}>MOST POPULAR</Text>
-                    </View>
-                  )}
-                  
-                  <View style={styles.planHeader}>
-                    <Text style={[styles.planName, { color: plan.color }]}>
-                      {plan.name}
-                    </Text>
-                    <Text style={[styles.planPrice, { color: plan.color }]}>
-                      {plan.price}
-                    </Text>
+                  {/* Plan Cards */}
+        <View style={styles.plansContainer}>
+          {plans.map((plan) => (
+            <InteractiveCard
+              key={plan.id}
+              style={[
+                styles.planCard,
+                selectedPlan === plan.id && styles.selectedPlan,
+                plan.popular && styles.popularPlan,
+              ]}
+              glowColor={plan.color}
+              intensity={selectedPlan === plan.id ? 0.6 : 0.3}
+              hoverScale={1.03}
+              onPress={() => handlePlanSelect(plan.id)}
+            >
+              <BlurView intensity={20} tint="light" style={styles.cardBlur}>
+                {plan.popular && (
+                  <View style={styles.popularBadge}>
+                    <Text style={styles.popularText}>MOST POPULAR</Text>
                   </View>
-                  
-                  <Text style={styles.planDescription}>
-                    {plan.description}
+                )}
+                
+                <View style={styles.planHeader}>
+                  <Text style={[styles.planName, { color: plan.color }]}>
+                    {plan.name}
                   </Text>
-                  
-                  <View style={styles.featuresContainer}>
-                    {plan.features.map((feature, index) => (
-                      <View key={index} style={styles.featureItem}>
-                        <View style={[styles.checkIcon, { backgroundColor: plan.color }]}>
-                          <Text style={styles.checkText}>✓</Text>
-                        </View>
-                        <Text style={styles.featureText}>{feature}</Text>
+                  <Text style={[styles.planPrice, { color: plan.color }]}>
+                    {plan.price}
+                  </Text>
+                </View>
+                
+                <Text style={styles.planDescription}>
+                  {plan.description}
+                </Text>
+                
+                <View style={styles.featuresContainer}>
+                  {plan.features.map((feature, index) => (
+                    <View key={index} style={styles.featureItem}>
+                      <View style={[styles.checkIcon, { backgroundColor: plan.color }]}>
+                        <Text style={styles.checkText}>✓</Text>
                       </View>
-                    ))}
-                  </View>
-                </BlurView>
-              </TouchableOpacity>
-            ))}
-          </View>
+                      <Text style={styles.featureText}>{feature}</Text>
+                    </View>
+                  ))}
+                </View>
+              </BlurView>
+            </InteractiveCard>
+          ))}
+        </View>
 
-          {/* Action Buttons */}
-          <View style={styles.actionsContainer}>
-            <TouchableOpacity
-              style={[styles.primaryButton, { backgroundColor: colors.text.white }]}
-              onPress={handleGetStarted}
-              disabled={isLoading}
-            >
-              <Text style={[styles.primaryButtonText, { color: colors.primary }]}>
-                {isLoading ? 'Setting up...' : 'Get Started'}
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={handleSkip}
-            >
-              <Text style={[styles.secondaryButtonText, { color: colors.text.white }]}>
-                Skip for now
-              </Text>
-            </TouchableOpacity>
-          </View>
+                  {/* Action Buttons */}
+        <View style={styles.actionsContainer}>
+          <InteractiveButton
+            style={[styles.primaryButton, { backgroundColor: colors.text.white }]}
+            textStyle={[styles.primaryButtonText, { color: colors.primary }]}
+            glowColor={colors.glow.primary}
+            onPress={handleGetStarted}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Setting up...' : 'Get Started'}
+          </InteractiveButton>
+          
+          <InteractiveButton
+            style={styles.secondaryButton}
+            textStyle={[styles.secondaryButtonText, { color: colors.text.white }]}
+            variant="secondary"
+            glowColor={colors.text.white}
+            onPress={handleSkip}
+          >
+            Skip for now
+          </InteractiveButton>
+        </View>
 
           {/* Footer */}
           <View style={styles.footer}>
@@ -240,16 +243,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: typography.fontSize['4xl'],
+    fontSize: typography.fontSize['3xl'],
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: spacing.md,
   },
   subtitle: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     textAlign: 'center',
     opacity: 0.9,
-    lineHeight: typography.lineHeight.relaxed * typography.fontSize.lg,
+    lineHeight: typography.lineHeight.relaxed * typography.fontSize.base,
   },
   plansContainer: {
     paddingHorizontal: spacing.md,
@@ -264,10 +267,11 @@ const styles = StyleSheet.create({
   },
   selectedPlan: {
     borderColor: colors.text.white,
-    ...shadows.lg,
+    ...createGlowStyle(colors.text.white, 0.6),
   },
   popularPlan: {
     transform: [{ scale: 1.02 }],
+    ...createGlowStyle(colors.premium.gold, 0.4),
   },
   cardBlur: {
     padding: spacing.lg,
@@ -291,18 +295,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   planName: {
-    fontSize: typography.fontSize['2xl'],
+    fontSize: typography.fontSize.xl,
     fontWeight: 'bold',
     marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   planPrice: {
-    fontSize: typography.fontSize.xl,
+    fontSize: typography.fontSize.lg,
     fontWeight: '600',
+    textAlign: 'center',
   },
   planDescription: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm,
     color: colors.gray[700],
     marginBottom: spacing.md,
+    textAlign: 'center',
   },
   featuresContainer: {
     gap: spacing.sm,
@@ -326,23 +333,25 @@ const styles = StyleSheet.create({
   },
   featureText: {
     flex: 1,
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     color: colors.gray[700],
   },
   actionsContainer: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xl,
     gap: spacing.md,
+    alignItems: 'center',
   },
   primaryButton: {
     paddingVertical: spacing.md,
     borderRadius: borderRadius.lg,
     alignItems: 'center',
-    ...shadows.md,
+    width: '100%',
   },
   primaryButtonText: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     fontWeight: '600',
+    textAlign: 'center',
   },
   secondaryButton: {
     paddingVertical: spacing.md,
@@ -350,10 +359,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.text.white,
+    width: '100%',
   },
   secondaryButtonText: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     fontWeight: '500',
+    textAlign: 'center',
   },
   footer: {
     paddingHorizontal: spacing.lg,
@@ -361,7 +372,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    fontSize: typography.fontSize.sm,
+    fontSize: typography.fontSize.xs,
     textAlign: 'center',
     opacity: 0.8,
   },
